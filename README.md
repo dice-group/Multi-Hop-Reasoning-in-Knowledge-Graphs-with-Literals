@@ -1,11 +1,6 @@
 # LitCQD: Multi-Hop Reasoning in Knowledge Graphs with Literals
 
-LitCQD can answer ---an approach to answer complex, multi-hop queries where both the query and the knowledge graph can contain literal values: 
-
-The implementation is based on the publicly available implementation of Query2Box ([Link](https://github.com/snap-stanford/KGReasoning)) .
-To load the dataset and the pretrained models, please download, unzip the two files
-checkpoints_FB15K-237 and data from
-([GoogleDriveLink](https://drive.google.com/drive/folders/1qXwWWlNO84Y1s8O0_1S1BDMXbv8MK3LK?usp=sharing)) into the current working directory, i.e., here.
+LitCQD can answer complex, multi-hop queries involving numerical literals.
 
 ## Installation
 ```
@@ -88,3 +83,5 @@ output:
     print_debug: True
     complex_train_queries: False # generate complex queries for training data; required by Query2Box
 ```
+
+For any questions or wishes, please contact:  ```caglar.demir@upb.de``` or ```caglardemir8@gmail.com```
