@@ -1,7 +1,8 @@
+import collections
 import csv
 import logging
 import statistics
-
+from typing import Tuple, Set
 from bidict import bidict
 from util import query_name_dict, name_query_dict
 from collections import defaultdict
@@ -9,22 +10,59 @@ import os
 import pickle
 
 
-def load_data(data_path, tasks, type):
-    '''
+def load_data(data_path: str, tasks: tuple, type_: str) -> Tuple[defaultdict, defaultdict, defaultdict]:
+    """
     Load queries and remove queries not in tasks
-    '''
-    if type == 'train':
+
+    Parameter
+    ---------
+    data_path: str
+
+
+    tasks: tuple
+
+    e.g. ('1p',)
+
+    type_: str
+
+
+    Returns: Tuple
+    ---------
+
+
+    """
+
+    if type_ == 'train':
+        queries: collections.defaultdict
         queries = pickle.load(open(os.path.join(data_path, "train-queries.pkl"), 'rb'))
+        k: Tuple
+        v: Set
+        """
+        # e.g. keys of queries dictionary on data/FB15k-237-q2b
+        Queries
+        ('e', ('r',)) => (3793, (107,))
+        ('e', ('r', 'r')) => (4582, (133, 17))
+        ('e', ('r', 'r', 'r')) => (4526, (95, 364, 39))
+        (('e', ('r',)), ('e', ('r',))) => ((5588, (135,)), (3239, (95,)))
+        (('e', ('r',)), ('e', ('r',)), ('e', ('r',))) => ((1730, (35,)), (2669, (7,)), (3587, (17,)))
+        (('e', ('r',)), ('e', ('r', 'n'))) => ((135, (13,)), (8594, (154, -2)))
+        (('e', ('r',)), ('e', ('r',)), ('e', ('r', 'n'))) => ((2263, (12,)), (1080, (57,)), (3352, (4, -2)))
+        ((('e', ('r',)), ('e', ('r', 'n'))), ('r',)) => (((1306, (298,)), (954, (49, -2))), (25,))
+        (('e', ('r', 'r')), ('e', ('r', 'n'))) => ((2410, (4, 65)), (592, (167, -2)))
+        (('e', ('r', 'r', 'n')), ('e', ('r',))) => ((4157, (348, 208, -2)), (389, (131,)))
+        """
         answers_easy = pickle.load(open(os.path.join(data_path, "train-answers.pkl"), 'rb'))
         answers_hard = defaultdict(set)
-    elif type == 'valid':
+    elif type_ == 'valid':
         queries = pickle.load(open(os.path.join(data_path, "valid-queries.pkl"), 'rb'))
         answers_hard = pickle.load(open(os.path.join(data_path, "valid-hard-answers.pkl"), 'rb'))
         answers_easy = pickle.load(open(os.path.join(data_path, "valid-easy-answers.pkl"), 'rb'))
-    elif type == 'test':
+    elif type_ == 'test':
         queries = pickle.load(open(os.path.join(data_path, "test-queries.pkl"), 'rb'))
         answers_hard = pickle.load(open(os.path.join(data_path, "test-hard-answers.pkl"), 'rb'))
         answers_easy = pickle.load(open(os.path.join(data_path, "test-easy-answers.pkl"), 'rb'))
+    else:
+        raise KeyError(f'{type_} invalid type_')
 
     # remove query structures not in tasks
     for task in list(queries.keys()):
@@ -33,9 +71,9 @@ def load_data(data_path, tasks, type):
 
     for qs in tasks:
         try:
-            logging.info(type+': '+qs+": "+str(len(queries[name_query_dict[qs]])))
+            logging.info(type_ + ': ' + qs + ": " + str(len(queries[name_query_dict[qs]])))
         except:
-            logging.warn(type+': '+qs+": not in pkl file")
+            logging.warn(type_ + ': ' + qs + ": not in pkl file")
 
     return queries, answers_easy, answers_hard
 
@@ -46,8 +84,8 @@ def load_attr_exists_data_dummy(data_path, mode='valid'):
     (e, r_a, 14505) ~ 14505 dummy entity AND
     (14505, r_a_inv, e)
     '''
-    queries = pickle.load(open(os.path.join(data_path, mode+"-attr-exists-queries.pkl"), 'rb'))
-    answers_easy = pickle.load(open(os.path.join(data_path, mode+"-attr-exists-answers.pkl"), 'rb'))
+    queries = pickle.load(open(os.path.join(data_path, mode + "-attr-exists-queries.pkl"), 'rb'))
+    answers_easy = pickle.load(open(os.path.join(data_path, mode + "-attr-exists-answers.pkl"), 'rb'))
     return queries, defaultdict(set), answers_easy
 
 
@@ -157,7 +195,7 @@ def get_mads(attr_values):
     mads = dict()
     for attr, values in dict(sorted(attr_values.items())).items():
         try:
-            mads[attr] = sum([abs(statistics.mean(values)-v) for v in values])/len(values)
+            mads[attr] = sum([abs(statistics.mean(values) - v) for v in values]) / len(values)
         except:
             mads[attr] = 1.0e-10
 
@@ -172,7 +210,7 @@ def denormalize(attribute, value, data_path):
         next(reader)
         for row in reader:
             if int(row[1]) == attribute:
-                return value*(float(row[3])-float(row[2]))+float(row[2])
+                return value * (float(row[3]) - float(row[2])) + float(row[2])
 
 
 def normalize(attribute, value, data_path):
@@ -181,4 +219,4 @@ def normalize(attribute, value, data_path):
         next(reader)
         for row in reader:
             if int(row[1]) == attribute:
-                return (value-float(row[2]))/(float(row[3])-float(row[2]))
+                return (value - float(row[2])) / (float(row[3]) - float(row[2]))
