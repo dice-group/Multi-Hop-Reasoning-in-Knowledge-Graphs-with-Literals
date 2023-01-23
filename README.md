@@ -1,5 +1,7 @@
 # LitCQD: Multi-Hop Reasoning in Knowledge Graphs with Literals
 
+LitCQD can answer ---an approach to answer complex, multi-hop queries where both the query and the knowledge graph can contain literal values: 
+
 The implementation is based on the publicly available implementation of Query2Box ([Link](https://github.com/snap-stanford/KGReasoning)) .
 To load the dataset and the pretrained models, please download, unzip the two files
 checkpoints_FB15K-237 and data from
@@ -18,6 +20,14 @@ pip3 install tensorboardX==2.4.1
 pip3 install tensorboard==2.7.0
 ```
 
+## Download Pretrained Models and Datasets
+```
+wget https://hobbitdata.informatik.uni-leipzig.de/LitCQD/checkpoints_FB15K-237.zip
+unzip checkpoints_FB15K-237.zip
+wget https://hobbitdata.informatik.uni-leipzig.de/LitCQD/data.zip
+unzip data.zip
+unzip checkpoints_FB15K-237.zip
+```
 ## Reproduce Reported Results
 Executing the following command results in evaluating the  LitCQD on FB15K-237 dataset provided within KBLRN
 ```
