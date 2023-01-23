@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
 from enum import Enum
-from enum import Enum
 from typing import Optional
 
 from simple_parsing.helpers.fields import field
@@ -14,14 +13,17 @@ from simple_parsing import ArgumentParser
 class TrainConfig:
     """General configurations for training"""
     # Path to queries
-    data_path: str
+    data_path: str = "data/FB15k-237-q2b"
     # Output path for checkpoint and logs
-    save_path: Optional[str]
+    save_path: Optional[str] ="save_path"
     # path for loading checkpoints
-    checkpoint_path: Optional[str]
+    checkpoint_path: Optional[str]= "save_path"
     # the model to be trained
-    geo: Enum('geo', ['cqd-transea', 'cqd-transeadistmult', 'cqd-transeacomplex', 'cqd-transra', 'cqd-mtkgnn', 'cqd-distmulta', 'cqd-complex', 'cqd-complexa', 'cqd-complexa-weighted', 'cqd-complexad', 'cqd-complexd', 'cqd-complexd-jointly', 'cqd-complex-simple',
-                      'cqd-transcomplexa', 'cqd-transcomplexdice', 'q2b', 'gqe', 'random_guesser'])
+    geo: Enum('geo',
+              ['cqd-transea', 'cqd-transeadistmult', 'cqd-transeacomplex', 'cqd-transra', 'cqd-mtkgnn', 'cqd-distmulta',
+               'cqd-complex', 'cqd-complexa', 'cqd-complexa-weighted', 'cqd-complexad', 'cqd-complexd',
+               'cqd-complexd-jointly', 'cqd-complex-simple',
+               'cqd-transcomplexa', 'cqd-transcomplexdice', 'q2b', 'gqe', 'random_guesser'])="cqd-complexa"
     # loss function of the relational part
     loss: Enum('loss', ['margin', 'ce', "q2b"]) = 'ce'
     # How many epochs the model is trained for
@@ -68,7 +70,7 @@ class CQDParams:
 class HyperParams:
     """Hyperparameter"""
     # hidden dim; embedding dimension
-    rank: int
+    rank: int = 100
     # batch size during training
     batch_size: int = 1024
     # loss function of the attribute part
