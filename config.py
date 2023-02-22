@@ -15,9 +15,9 @@ class TrainConfig:
     # Path to queries
     data_path: str = "data/FB15k-237-q2b"
     # Output path for checkpoint and logs
-    save_path: Optional[str] ="save_path"
+    save_path: Optional[str] =None #"save_path"
     # path for loading checkpoints
-    checkpoint_path: Optional[str]= "save_path"
+    checkpoint_path: Optional[str] =None #"checkpoint_path"
     # the model to be trained
     geo: Enum('geo',
               ['cqd-transea', 'cqd-transeadistmult', 'cqd-transeacomplex', 'cqd-transra', 'cqd-mtkgnn', 'cqd-distmulta',

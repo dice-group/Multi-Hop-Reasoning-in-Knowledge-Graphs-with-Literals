@@ -11,7 +11,7 @@ import torch
 from torch.utils.data import Dataset
 from util import list2tuple, tuple2list, flatten
 from typing import DefaultDict
-
+from collections import defaultdict
 
 class TestDataset(Dataset):
     def __init__(self, queries):

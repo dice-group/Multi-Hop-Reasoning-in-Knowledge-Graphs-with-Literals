@@ -244,7 +244,8 @@ def train(train_config: TrainConfig, cqd_params: CQDParams):
             model.load_state_dict(model_state)
             trainer.optimizer.load_state_dict(optimizer_state)
         else:
-            logging.info('Ramdomly Initializing %s Model...' % train_config.geo.name)
+            logging.info('Randomly Initializing %s Model...' % train_config.geo.name)
+        
 
         if eval_train_queries:
             def eval_fn(epoch):
@@ -269,13 +270,12 @@ def train(train_config: TrainConfig, cqd_params: CQDParams):
             trainer.train(eval_fn, tensorboard_write_loss, train_config.valid_epochs)
             torch.save((model.state_dict(), trainer.optimizer.state_dict()),
                        os.path.join(train_config.save_path, 'checkpoint'))
-
     return train_ray
-
 
 def run_tune(train_config: TrainConfig, cqd_params: CQDParams, params: HyperParams, nentity, nrelation, nattribute,
              **data):
-    ray.init(num_gpus=1)
+    # ray.init(num_gpus=1)
+    ray.init(num_cpus=2)
 
     if train_config.geo.name in ('cqd-complexd', 'cqd-complexad'):
         # Models using description embeddings
@@ -343,12 +343,12 @@ def run_tune(train_config: TrainConfig, cqd_params: CQDParams, params: HyperPara
         # params.batch_size = tune.choice([200, 1000])
         # params.learning_rate = tune.loguniform(1e-3, 1)
         # params.learning_rate_attr = tune.loguniform(1e-3, 1)
-        params.rank_attr = tune.grid_search([20, 50])
-        params.learning_rate = tune.grid_search([0.1, 0.01])
-        params.rank = tune.grid_search([128, 256, 512, 1024])
-        params.alpha = tune.grid_search([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
-        params.p_norm = tune.grid_search([1, 2])
-        params.attr_loss = tune.grid_search(['mae', 'mse'])
+        params.rank_attr = tune.grid_search([20])#, 50])
+        params.learning_rate = tune.grid_search([0.1])#, 0.01])
+        params.rank = tune.grid_search([128])#, 256, 512, 1024])
+        params.alpha = tune.grid_search([0.2])#, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
+        params.p_norm = tune.grid_search([1])#, 2])
+        params.attr_loss = tune.grid_search(['mae'])#, 'mse'])
         params.do_sigmoid = tune.grid_search([True, False])
         search_alg = BasicVariantGenerator()
         # search_alg = BasicVariantGenerator(max_concurrent=2)
@@ -376,7 +376,8 @@ def run_tune(train_config: TrainConfig, cqd_params: CQDParams, params: HyperPara
             mode='max',
             # num_samples=20,
             # training has to be done on the same device for reproducibility; randomness not guaranteed on different devices; also not guaranteed at 100% utilization
-            resources_per_trial={'gpu': 0.25, 'cpu': 1},
+            #resources_per_trial={'gpu': 0.25, 'cpu': 1},
+            resources_per_trial={'cpu':1},
             search_alg=search_alg,
             keep_checkpoints_num=1,
             progress_reporter=reporter,
@@ -503,6 +504,7 @@ def main(args):
         )
     else:
         if train_config.do_train:
+            logging.info('Training starts')
             train(train_config, cqd_params)(vars(params), nentity, nrelation, nattribute, train_data_rel,
                                             train_data_attr, train_data_desc,
                                             valid_loss_data_rel, valid_loss_data_attr, valid_queries,

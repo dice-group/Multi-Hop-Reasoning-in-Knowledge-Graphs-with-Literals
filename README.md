@@ -4,7 +4,8 @@ LitCQD can answer complex, multi-hop queries involving numerical literals.
 
 ## Installation
 ```
-conda create -n temp python=3.8
+git clone https://github.com/dice-group/Multi-Hop-Reasoning-in-Knowledge-Graphs-with-Literals.git
+conda create -n litcqd python=3.8
 pip3 install torch==1.9.0 --find-links https://download.pytorch.org/whl/torch_stable.html
 pip3 install bidict==0.21.3
 pip3 install gensim==4.1.2

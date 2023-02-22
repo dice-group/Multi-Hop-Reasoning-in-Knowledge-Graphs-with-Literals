@@ -170,7 +170,7 @@ def get_model(train_config: TrainConfig, params: HyperParams, cqd_params: CQDPar
     elif geo == 'random_guesser':
         model = RandomGuesser(nentity)
 
-    if train_config.cuda:
+    if train_config.cuda and torch.cuda.is_available():
         model = model.cuda()
     return model
 
